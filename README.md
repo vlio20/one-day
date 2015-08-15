@@ -165,10 +165,10 @@ pseudo code:
 	forEach minute in histogram {
 		if(minute.length > 0) {
 			cluster = cluster || new Cluster(new Array(), 0);
-			forEach event in minute {
-				if(event.id not in cluster.nodes) {
-					cluster.nodes[event.id] = nodeMap[event.id];
-					node.cluster = cluster;
+			forEach eventId in minute {
+				if(eventId not in cluster.nodes) {
+					cluster.nodes[eventId] = nodeMap[eventId];
+					nodeMap[eventId].cluster = cluster;
 				}
 			} 
 		} else { 
@@ -182,10 +182,12 @@ pseudo code:
 	
 	//adding edges to nodes
 	forEach minute in histogram {
-		forEach sourceEvent in minute {
-			sourceNode = eventsMap[sourceEvent.id];
-			forEach targetEvent in minute {
-				sourceNode.clique[targetEvent.id] = eventsMap[targetEvent.id]
+		forEach sourceEventId in minute {
+			sourceNode = eventsMap[sourceEventId];
+			forEach targetEventId in minute {
+			    if(sourceEventId != targetEventId) {
+			        sourceNode.clique[targetEventId] = eventsMap[targetEventId];
+			    }
 			}
 		}
 	}
