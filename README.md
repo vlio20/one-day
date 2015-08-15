@@ -4,7 +4,8 @@ A one day calendar
 ## Requirements
 Part I: Write a function to lay out a series of events on the calendar for a single day.
 
-Events will be placed in a container. The top of the container represents 9am and the bottom represents 9pm. The width of the container will be 620px (10px padding on the left and right) and the height will be 720px (1 pixel for every minute between 9am and 9pm). The objects should be laid out so that they do not visually overlap. If there is only one event at a given time slot, its width should be 600px.
+Events will be placed in a container. The top of the container represents 9am and the bottom represents 9pm.   
+The width of the container will be 620px (10px padding on the left and right) and the height will be 720px (1 pixel for every minute between 9am and 9pm). The objects should be laid out so that they do not visually overlap. If there is only one event at a given time slot, its width should be 600px.
 
 There are 2 major constraints: 
 1. Every colliding event must be the same width as every other event that it collides width. 

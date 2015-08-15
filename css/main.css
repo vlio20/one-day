@@ -1,0 +1,37 @@
+.board-wrapper {
+    height: 720px;
+    display: block;
+}
+
+.board {
+    margin: 0 auto;
+    width: 600px;
+    padding: 0 10px;
+    position: relative;
+    background: #CCCCCC;
+}
+
+.time-column, .board {
+    height: 100%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.time-column {
+    text-align: right;
+}
+
+.time-column div {
+    height: 30px;
+    vertical-align: top;
+}
+
+.time-column div:nth-child(odd) {
+     font-size: 16px;
+    color: #AEAEAE
+ }
+
+.time-column div:nth-child(even) {
+    font-size: 12px;
+    color: #CCCCCC;
+}
