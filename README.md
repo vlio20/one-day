@@ -55,7 +55,6 @@ I will try to address this task in manner of graphs, so few terms should be give
 For the following input:
 
     [
-    
 	     {id : 1, start : 0, end : 120}, 
 	     {id : 2, start : 60, end : 120},
 	     {id : 3, start : 60, end : 180},
@@ -63,7 +62,7 @@ For the following input:
 	     {id : 5, start : 200, end : 240},
 	     {id : 6, start : 300, end : 420},
 	     {id : 7, start : 360, end : 420},
-	     {id : 8, start : 300, end : 720},
+	     {id : 8, start : 300, end : 720}
     ]
 The graph will be:
 ![enter image description here](http://s24.postimg.org/tz0ly8nqt/graph.png)
