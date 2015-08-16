@@ -10,6 +10,10 @@
         {id: 8, start: 300, end: 720}
     ];
 
+    var BOARD_WIDTH = 600;
+    var boardDiv = document.getElementsByClassName('board')[0];
+    //boardDiv.innerHTML = '';
+
     layOutDay(events);
 
     function layOutDay(events) {
@@ -17,8 +21,10 @@
 
         if (isInputValid) {
             var histogram = createHistogram(events);
-
             var graph = createTheGraph(events, histogram);
+            setClusterWidth(graph);
+            setNodesPosition(graph);
+            drawBoard(graph);
         }
     }
 
@@ -95,6 +101,12 @@
         return minutes;
     }
 
+    /**
+     * creates a graph of events
+     * @param events - the provided input (events)
+     * @param minutes - the histogram array
+     * @returns {Graph}
+     */
     function createTheGraph(events, minutes) {
         var graph = new Graph();
         var nodeMap = {};
@@ -134,18 +146,89 @@
             graph.clusters.push(cluster);
         }
 
-        //adding cliques to nodes, clique is the group of colliding nodes (events)
+        //adding neighbours to nodes, neighbours is the group of colliding nodes (events).
+        //adding the biggest clique for each site
         minutes.forEach(function (minute) {
             minute.forEach(function (eventId) {
                 var sourceNode = nodeMap[eventId];
+
+                //a max clique is a biggest group of colliding events
+                sourceNode.biggestCliqueSize = Math.max(sourceNode.biggestCliqueSize, minute.length);
                 minute.forEach(function (targetEventId) {
                     if (eventId != targetEventId) {
-                        sourceNode.clique[targetEventId] = nodeMap[targetEventId];
+                        sourceNode.neighbours[targetEventId] = nodeMap[targetEventId];
                     }
                 });
             });
         });
+
+        graph.nodes = nodeMap;
+
+        return graph;
     }
+
+    /**
+     * width of each node in a cluster defined by the board width divided by the biggest colliding group (a.k.a neighbours)
+     * in the cluster.
+     * @param graph
+     */
+    function setClusterWidth(graph) {
+        graph.clusters.forEach(function (cluster) {
+
+            //cluster must have at least one node
+            var maxCliqueSize = 1;
+            for (var nodeId in cluster.nodes) {
+                maxCliqueSize = Math.max(maxCliqueSize, cluster.nodes[nodeId].biggestCliqueSize);
+            }
+
+            cluster.maxCliqueSize = maxCliqueSize;
+            cluster.width = BOARD_WIDTH / (maxCliqueSize);
+        });
+    }
+
+    /**
+     * sets each nodes position (relative to its neighbours). The number of available positions on the X axes is
+     * according to the biggest clique in the cluster.
+     * @param graph
+     */
+    function setNodesPosition(graph) {
+        graph.clusters.forEach(function (cluster) {
+            for (var nodeId in cluster.nodes) {
+                var node = cluster.nodes[nodeId];
+                var positionArray = new Array(node.cluster.maxCliqueSize);
+
+                //find a place (offset) on the X axes of the node
+                for (var neighbourId in node.neighbours) {
+                    var neighbour = node.neighbours[neighbourId];
+                    if (neighbour.position != null) {
+                        positionArray[neighbour.position] = true;
+                    }
+                }
+
+                for (var i = 0; i < positionArray.length; i++) {
+                    if (!positionArray[i]) {
+                        node.position = i;
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Draws the events on the board;
+     * @param graph
+     */
+    function drawBoard(graph) {
+        for(var nodeId in graph.nodes) {
+            var node = graph.nodes[nodeId];
+
+            //the 10 in the left parameter is for the left padding of the board element
+            appendEvent(node.start, node.position * node.cluster.width + 10, node.cluster.width, node.end + 1 - node.start);
+        }
+    }
+
+    /*-----Utils-----*/
 
     /**
      * Checks if given number is an int
@@ -155,5 +238,17 @@
     function isInt(n) {
         return Number(n) === n && n % 1 === 0;
     }
-})
-();
+
+    /**
+     * appends event to the board
+     * @param top
+     * @param left
+     * @param width
+     * @param height
+     */
+    function appendEvent(top, left, width, height) {
+        var style = 'position: absolute; top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px;';
+        boardDiv.insertAdjacentHTML('beforeend', '<div class="event" style="' + style + '"></div>');
+    }
+
+})();
