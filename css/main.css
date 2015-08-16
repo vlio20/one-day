@@ -1,15 +1,22 @@
+html, body {
+    width: 100%;
+    padding: 20px;
+}
+
 .board-wrapper {
     height: 720px;
-    display: block;
+    width: 700px;
+    margin: auto;
 }
 
 .board {
-    margin: 0 auto;
     width: 600px;
     padding: 0 10px;
     position: relative;
-    background: #d5d5d5;
-    border: 1px solid #d5d5d5;
+    background: #ECECEC;
+    border-top: 1px solid #ECECEC;
+    border-bottom: 1px solid #ECECEC;
+    border-left: 2px solid #CCCCCC;
 }
 
 .time-column, .board {
@@ -20,6 +27,7 @@
 
 .time-column {
     text-align: right;
+    width: 70px;
 }
 
 .time-column div {
@@ -28,8 +36,8 @@
 }
 
 .time-column div:nth-child(odd) {
-     font-size: 16px;
-    color: #AEAEAE
+    font-size: 16px;
+    color: #686868;
  }
 
 .time-column div:nth-child(even) {
@@ -38,8 +46,23 @@
 }
 
 .event {
+    position: absolute;
     box-sizing: border-box;
     background: white;
-    border-left: 5px solid blue;
+    border: 1px solid #ECECEC;
     overflow: hidden;
+}
+
+.event::before {
+    position: absolute;
+    content: "";
+    top: -1px;
+    bottom: -1px;
+    left: 1px;
+    width: 5px;
+    background: blue;
+}
+
+.event > span {
+    margin-left: 10px;
 }

@@ -220,11 +220,11 @@
      * @param graph
      */
     function drawBoard(graph) {
-        for(var nodeId in graph.nodes) {
+        for (var nodeId in graph.nodes) {
             var node = graph.nodes[nodeId];
 
             //the 10 in the left parameter is for the left padding of the board element
-            appendEvent(node.start, node.position * node.cluster.width + 10, node.cluster.width, node.end + 1 - node.start);
+            appendEvent(node.id, node.start, node.position * node.cluster.width + 10, node.cluster.width, node.end + 1 - node.start);
         }
     }
 
@@ -246,9 +246,9 @@
      * @param width
      * @param height
      */
-    function appendEvent(top, left, width, height) {
-        var style = 'position: absolute; top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px;';
-        boardDiv.insertAdjacentHTML('beforeend', '<div class="event" style="' + style + '"></div>');
+    function appendEvent(text, top, left, width, height) {
+        var style = 'top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px;';
+        boardDiv.insertAdjacentHTML('beforeend', '<div class="event" style="' + style + '"><span>' + text + '</span></div>');
     }
 
 })();
