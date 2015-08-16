@@ -81,15 +81,9 @@
                 }
 
                 //checking the event end time
-                if (!(isInt(event.end) && event.start <= event.end && event.end <= 720)) {
+                if (!(isInt(event.end) && event.start < event.end && event.end <= 720)) {
                     isValid = false;
                     console.error("invalid end time");
-                }
-
-                //checking if start and end time not overlapping
-                if(event.start == event.end) {
-                    isValid = false;
-                    console.error("events start and end time overlap");
                 }
             }
 
