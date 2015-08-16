@@ -9,12 +9,12 @@ function Cluster() {
     this.maxCliqueSize = 1;
 }
 
-function Node(id, start, end, neighbours, cluster, position, biggestCliqueSize) {
+function Node(id, start, end) {
     this.id = id;
     this.start = start;
     this.end = end;
-    this.neighbours = neighbours || {};
-    this.cluster = cluster || null;
-    this.position = position || null;
+    this.neighbours = {};
+    this.cluster = null;
+    this.position = null;
     this.biggestCliqueSize = 1;
 }

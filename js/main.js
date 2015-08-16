@@ -1,21 +1,27 @@
 (function () {
-    var events = [
-        {id: 1, start: 0, end: 120},
-        {id: 2, start: 60, end: 120},
-        {id: 3, start: 60, end: 180},
-        {id: 4, start: 150, end: 240},
-        {id: 5, start: 200, end: 240},
-        {id: 6, start: 300, end: 420},
-        {id: 7, start: 360, end: 420},
-        {id: 8, start: 300, end: 720}
-    ];
+    //var events = [
+    //    {id: 1, start: 0, end: 120},
+    //    {id: 2, start: 60, end: 120},
+    //    {id: 3, start: 60, end: 180},
+    //    {id: 4, start: 150, end: 240},
+    //    {id: 5, start: 200, end: 240},
+    //    {id: 6, start: 300, end: 420},
+    //    {id: 7, start: 360, end: 420},
+    //    {id: 8, start: 300, end: 720}
+    //];
+
+    var events = test(3);
 
     var BOARD_WIDTH = 600;
+    var BOARD_PADDING = 10;
     var boardDiv = document.getElementsByClassName('board')[0];
-    //boardDiv.innerHTML = '';
 
     layOutDay(events);
 
+    /**
+     * The required function
+     * @param events
+     */
     function layOutDay(events) {
         var isInputValid = validateEvents(events);
 
@@ -197,7 +203,7 @@
                 var node = cluster.nodes[nodeId];
                 var positionArray = new Array(node.cluster.maxCliqueSize);
 
-                //find a place (offset) on the X axes of the node
+                //find a place (offset) on the X axis of the node
                 for (var neighbourId in node.neighbours) {
                     var neighbour = node.neighbours[neighbourId];
                     if (neighbour.position != null) {
@@ -222,9 +228,7 @@
     function drawBoard(graph) {
         for (var nodeId in graph.nodes) {
             var node = graph.nodes[nodeId];
-
-            //the 10 in the left parameter is for the left padding of the board element
-            appendEvent(node.id, node.start, node.position * node.cluster.width + 10, node.cluster.width, node.end + 1 - node.start);
+            appendEvent(node.id, node.start, node.position * node.cluster.width + BOARD_PADDING, node.cluster.width, node.end + 1 - node.start);
         }
     }
 
@@ -249,6 +253,28 @@
     function appendEvent(text, top, left, width, height) {
         var style = 'top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px;';
         boardDiv.insertAdjacentHTML('beforeend', '<div class="event" style="' + style + '"><span>' + text + '</span></div>');
+    }
+
+    /*-----test------*/
+    function test(eventsNumber) {
+        var events = [];
+        for (var i = 0; i < eventsNumber; i++) {
+            var start = rand(0, 699);
+            var end = rand(start + 1, 720);
+            var ev = {
+                id: i,
+                start: start,
+                end: end
+            };
+
+            events.push(ev);
+        }
+
+        return events;
+    }
+
+    function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
 })();
