@@ -31,8 +31,8 @@ html, body {
 }
 
 .time-column div {
+    position: relative;
     height: 30px;
-    vertical-align: top;
 }
 
 .time-column div:nth-child(odd) {
@@ -45,24 +45,26 @@ html, body {
     color: #CCCCCC;
 }
 
+.time-column div:nth-child(odd) > span {
+    position: relative;
+    top: -8px;
+}
+
+.time-column div:nth-child(even) > span {
+    position: relative;
+    top: -6px;
+}
+
 .event {
     position: absolute;
     box-sizing: border-box;
+    border-left: 4px solid blue;
     background: white;
-    border: 1px solid #ECECEC;
     overflow: hidden;
 }
 
-.event::before {
-    position: absolute;
-    content: "";
-    top: -1px;
-    bottom: -1px;
-    left: 1px;
-    width: 5px;
-    background: blue;
-}
-
 .event > span {
+    display: inline-block;
+    margin-top: 5px;
     margin-left: 10px;
 }

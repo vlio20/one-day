@@ -11,7 +11,8 @@ There are 2 major constraints:
 1. Every colliding event must be the same width as every other event that it collides width. 
 2. An event should use the maximum width possible while still adhering to the first constraint.
 
-See calendar1.png for an example.
+See below image for an example.
+![image 1](http://i.imgur.com/nVpxlev.png)
 
 The input to the function will be an array of event objects with the start and end times of the event. Example (JS):
 
@@ -24,7 +25,10 @@ The input to the function will be an array of event objects with the start and e
 
 The function should return an array of event objects that have the left and top positions set (relative to the top left of the container), in addition to the id, start, and end time.
 
-Part II: Use your function from Part I to create a web page that is styled just like the example image calendar_part2.png with the following calendar events:
+Part II: Use your function from Part I to create a web page that is styled just like the example image below.  
+![image2](http://i.imgur.com/HptzBTd.png)
+with the following calendar events:
+
 
  1. An event that starts at 9:30 am and ends at 11:30 am
  2. An event that starts at 6:00 pm and ends at 7:00pm
@@ -32,9 +36,13 @@ Part II: Use your function from Part I to create a web page that is styled just 
  4. An event that starts at 7:10pm pm and ends at 8:10 pm  
 
 ## Code
+
 ### Installation & Running
 1. Clone this repo
-2. Open the index.html file in your favourite browser. 
+2. Open the index.html file in your favourite browser.   
+
+**Note:** at startup there is a default set of events (required in the second part).  
+For testing, right below the default array (line 14), you can find `generateEvents` function which generates random array of events. The array size will be determined by the arrayLength attribute.
 
 ### Dependencies 
 none! 
@@ -51,7 +59,7 @@ I will try to address this task in manner of graphs, so few terms should be give
 **Edge:** represents colliding events - $e$, $e \in E, E$ - group of all edges. For example, if node $u$ and $v$ collide then there will be an edge $e_{u,v}$ connecting them.  
 **Graph:** the collection of nodes and edges $G, G\in(N,E)$ .  
 **Cluster:** represents a group of connected nodes ( sub group of the Graph) - $c$, $c \subseteq G$ . For example, if we have the following nodes: $u, v, w$ and edge $e_{u,v}$. Then there will be 2 clusters, the first will contain $u,v$ and the second will contain only $w$.  
-**Clique:** represents sub group of nodes in a cluster, each pair of nodes in this group has a connecting edge -  $cq$, $cq \subseteq c$. Note, clique represents a colliding events.
+**Clique:** represents sub group of nodes in a cluster, each pair of nodes in this group has a connecting edge -  $cq$, $cq \subseteq c$. Note, a clique represents a group of colliding events.
 
 **Board:** The day container which holds all the events.  
 
@@ -70,7 +78,7 @@ For the following input:
     ]
 The graph will be:  
 
-![enter image description here](http://s24.postimg.org/tz0ly8nqt/graph.png)  
+![graph image](http://s24.postimg.org/tz0ly8nqt/graph.png)  
 
 Black cycle - node - event  
 Green ellipse - clique - group of colliding events  
@@ -78,17 +86,17 @@ Red ellipse - cluster - group of connected nodes
 Blue line - edge - connector between colliding events  
 Note: the top left green ellipse is the biggest clique in the left cluster.  
 The board will be:
-![enter image description here](http://i.imgur.com/4sqYwoz.png)  
+![board](http://i.imgur.com/4sqYwoz.png)  
 
 Red rectangle - cluster  
-Colored dots - clique   
+Colored dots - clique (each color is a different clique). 
 
 
 ### Constraint paraphrase 
 1. Each node in the **same cluster** must have the same width on the board, in order to meet the first constraint.  
 2. Nodes must not overlap each other on the board while starching to maximum width and still adhering to the first constraint.
 3. The width of nodes in a cluster will be set by the biggest clique in the cluster. This is true because, nodes in the same clique will share at least one minute on the board, meaning that they will have to have the same width (because they are colliding). So other nodes in the cluster will have the same width as the smallest node.
-4. Each node in a clique will gain its X axis position relative to the nodes in this clique. 
+4. Each node in a clique will gain its X axis position relative to its neighbours. 
 
 ### Algorithm
 For given array of events `arrayOfEvents` (from the requirements example): 
@@ -101,8 +109,8 @@ For given array of events `arrayOfEvents` (from the requirements example):
     ]
 
 **Step One:** creating events histogram.  
-An Array of arrays will be created, lets call this array as `histogram`. The `histogram` length will be 720, each index of the `histogram` will represent an a  minute on the board (day). 
-Lets call each index of the `histogram` a `minute`. Each `minute`, is an array. Each index of the `minute` array represents an event which takes place at this minute.
+An Array of arrays will be created, lets call this array as `histogram`. The `histogram` length will be 720, each index of the `histogram` will represent a  minute on the board (day). 
+Lets call each index of the `histogram` a `minute`. Each `minute`, is an array itself. Each index of the `minute` array represents an event which takes place at this minute.
 
 pseudo code:  
 
@@ -157,8 +165,8 @@ pseudo code:
     ]
 
 **Step Two:** creating the graph  
-In this step the graph will be created, including nodes, edges and clusters.  
-Note that there won't be an edge entity, each node will hold a map of nodes (key: node id, value: node) which it collides with (its clique). This map will be called neighbours. Also, a `maxCliqueSize` attribute will be add to each node. The `maxCliqueSize` is biggest clique the node is part of. 
+In this step the graph will be created, including nodes, node neighbours and clusters also the biggest clique of the cluster will be determined.  
+Note that there won't be an edge entity, each node will hold a map of nodes (key: node id, value: node) which it collides with (its neighbours). This map will be called neighbours. Also, a `maxCliqueSize` attribute will be added to each node. The `maxCliqueSize` is the biggest clique the node is part of. 
 
 pseudo code:  
 
@@ -207,12 +215,9 @@ pseudo code:
 	}
 
 **Step Three:** calculating the width of each cluster.  
-As mentioned above, the width of all nodes in the cluster will be determined by the size of the biggest clique in the in the cluster.  
-For simplicity reasons there is no unique cliques, rather each node will hold its clique.  
+As mentioned above, the width of all nodes in the cluster will be determined by the size of the biggest clique in the cluster.   
 The width of each node $n$ in cluster $c$ will follow this equation:  
-$$n_{width} = \frac{Board_{width}}{MAX\left ( size\left (cl_{1} \right), size\left (cl_{2} \right), ...,  size\left (cl_{n} \right)\right )}$$
-
-Where $cl_{i} \subseteq c$  
+$$n_{width} = \frac{Board_{width}}{Max\left ( n_{1}.biggestCliqueSize, n_{2}.biggestCliqueSize, ...,  n_{n}.biggestCliqueSize\right )}$$
 
 Each node width will be set in the cluster its related to. So the width property will be set on the cluster entity.
 
@@ -228,7 +233,7 @@ pseudo code:
     }
 
 **Step Four:** calculating the node position within its clique.  
-As already mentioned, nodes in the same clique represents colliding events, meaning that they will have to share X axis "real-estate". In this step X axis position will be given for each node in a clique.  
+As already mentioned, nodes will have to share the X axis (the "real-estate") with its neighbours. In this step X axis position will be given for each node according to its neighbours.  The biggest clique in the cluster will determine the amount of available places.
 
 pseudo code:  
 
@@ -255,4 +260,8 @@ In this step we already have all the information we need to place an event (node
  1. height: node.end - node.start  
  2. width: node.cluster.width   
  3. top-offset: node.start  
- 4. left-offset: node.cluster.width * (node.position + 1)  
+ 4. left-offset: node.cluster.width * node.position + left-padding
+
+#### Algorithm Complexity
+The time complexity of the algorithm is $O\left(n^{2} \right )$.  
+The space complexity of the algorithm is $O\left (n \right )$.  

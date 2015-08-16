@@ -1,20 +1,17 @@
 (function () {
-    //var events = [
-    //    {id: 1, start: 0, end: 120},
-    //    {id: 2, start: 60, end: 120},
-    //    {id: 3, start: 60, end: 180},
-    //    {id: 4, start: 150, end: 240},
-    //    {id: 5, start: 200, end: 240},
-    //    {id: 6, start: 300, end: 420},
-    //    {id: 7, start: 360, end: 420},
-    //    {id: 8, start: 300, end: 720}
-    //];
-
-    var events = test(3);
-
     var BOARD_WIDTH = 600;
     var BOARD_PADDING = 10;
     var boardDiv = document.getElementsByClassName('board')[0];
+
+    var events = [
+        {id: 1, start: 30, end: 150},
+        {id: 2, start: 540, end: 600},
+        {id: 3, start: 560, end: 620},
+        {id: 4, start: 610, end: 670}
+    ];
+
+    //randomize events
+    //events = generateEvents(5);
 
     layOutDay(events);
 
@@ -24,14 +21,34 @@
      */
     function layOutDay(events) {
         var isInputValid = validateEvents(events);
+        var eventsWithPositioning = [];
 
         if (isInputValid) {
+            var eventsHTMLString = '';
             var histogram = createHistogram(events);
             var graph = createTheGraph(events, histogram);
             setClusterWidth(graph);
             setNodesPosition(graph);
-            drawBoard(graph);
+
+            //setting the position and width of each event
+            for(var nodeId in graph.nodes) {
+                var node = graph.nodes[nodeId];
+                var event = {
+                    id: node.id,
+                    top: node.start,
+                    left: node.position * node.cluster.width + BOARD_PADDING,
+                    height: node.end + 1 - node.start,
+                    width: node.cluster.width
+                };
+
+                eventsHTMLString += createEventHTMLString(event.id, event.top, event.left, event.width, event.height);
+                eventsWithPositioning.push(event);
+            }
+
+            boardDiv.insertAdjacentHTML('beforeend', eventsHTMLString);
         }
+
+        return eventsWithPositioning;
     }
 
     /**
@@ -52,23 +69,32 @@
                 //checking the event id
                 if (!(event && isInt(event.id) && !mapOfIds[event.id])) {
                     isValid = false;
+                    console.error("invalid event id");
                 } else {
                     mapOfIds[event.id] = true;
                 }
 
                 //checking the event start time
-                if (!(isInt(event.start) && 0 <= event.start && event.start <= 720)) {
+                if (!(isInt(event.start) && 0 <= event.start && event.start <= 699)) {
                     isValid = false;
+                    console.error("invalid start time");
                 }
 
                 //checking the event end time
                 if (!(isInt(event.end) && event.start <= event.end && event.end <= 720)) {
                     isValid = false;
+                    console.error("invalid end time");
                 }
 
-                if (!isValid) {
-                    console.error("one of the objects in the events array is invalid");
+                //checking if start and end time not overlapping
+                if(event.start == event.end) {
+                    isValid = false;
+                    console.error("events start and end time overlap");
                 }
+            }
+
+            if (!isValid) {
+                console.error("one of the objects in the events array is invalid");
             }
 
         } else {
@@ -221,17 +247,6 @@
         });
     }
 
-    /**
-     * Draws the events on the board;
-     * @param graph
-     */
-    function drawBoard(graph) {
-        for (var nodeId in graph.nodes) {
-            var node = graph.nodes[nodeId];
-            appendEvent(node.id, node.start, node.position * node.cluster.width + BOARD_PADDING, node.cluster.width, node.end + 1 - node.start);
-        }
-    }
-
     /*-----Utils-----*/
 
     /**
@@ -250,15 +265,21 @@
      * @param width
      * @param height
      */
-    function appendEvent(text, top, left, width, height) {
-        var style = 'top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px;';
-        boardDiv.insertAdjacentHTML('beforeend', '<div class="event" style="' + style + '"><span>' + text + '</span></div>');
+    function createEventHTMLString(text, top, left, width, height) {
+        var style =  'top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px;';
+        return '<div class="event" style="' + style + '"><span>' + text + '</span></div>';
     }
 
     /*-----test------*/
-    function test(eventsNumber) {
+
+    /**
+     * Will create an array of event, the length of the array is determined by eventsNumber
+     * @param eventsNumber
+     * @returns {Array}
+     */
+    function generateEvents(arrayLength) {
         var events = [];
-        for (var i = 0; i < eventsNumber; i++) {
+        for (var i = 0; i < arrayLength; i++) {
             var start = rand(0, 699);
             var end = rand(start + 1, 720);
             var ev = {
@@ -273,6 +294,12 @@
         return events;
     }
 
+    /**
+     * generates a random integer i between min and max
+     * @param min
+     * @param max
+     * @returns {*}
+     */
     function rand(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
